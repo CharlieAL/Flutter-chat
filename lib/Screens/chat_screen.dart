@@ -40,23 +40,21 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ],
           ),
         ),
-        body: Container(
-          child: Column(
-            children: [
-              Flexible(
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (_, i) => _message[i],
-                  itemCount: _message.length,
-                  reverse: true,
-                ),
+        body: Column(
+          children: [
+            Flexible(
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (_, i) => _message[i],
+                itemCount: _message.length,
+                reverse: true,
               ),
-              SizedBox(
-                height: 80,
-                child: _inputChat(),
-              )
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 80,
+              child: _inputChat(),
+            )
+          ],
         ));
   }
 
@@ -108,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 height: 40,
                 decoration: BoxDecoration(
                     color: _estaEscribiendo
-                        ? Color.fromARGB(255, 38, 223, 243)
+                        ? const Color.fromARGB(255, 38, 223, 243)
                         : const Color.fromARGB(255, 242, 242, 242),
                     borderRadius: BorderRadius.circular(100)),
                 child: IconTheme(

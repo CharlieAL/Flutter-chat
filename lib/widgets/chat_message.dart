@@ -23,7 +23,7 @@ class ChatMessage extends StatelessWidget {
         child: FadeTransition(
           opacity: animationController,
           child: Container(
-            child: this.uid == '123' ? _myMessage() : _notMyMessage(),
+            child: uid == '123' ? _myMessage() : _notMyMessage(),
           ),
         ),
       ),

@@ -50,8 +50,8 @@ class Label extends StatelessWidget {
                   PageTransition(
                       alignment: Alignment.bottomCenter,
                       curve: Curves.easeInOut,
-                      duration: Duration(milliseconds: 400),
-                      reverseDuration: Duration(milliseconds: 400),
+                      duration: const Duration(milliseconds: 400),
+                      reverseDuration: const Duration(milliseconds: 400),
                       type: PageTransitionType.topToBottomPop,
                       child: const LoginScreen(),
                       childCurrent: const RegisterScreen()),

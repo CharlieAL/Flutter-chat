@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
-    required this.onPressed,
+    this.onPressed,
     this.text = 'Aceptar',
   });
 
-  final Function onPressed;
+  // ignore: prefer_typing_uninitialized_variables
+  final onPressed;
   final String text;
 
   @override
@@ -17,7 +18,7 @@ class CustomButton extends StatelessWidget {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () => onPressed(),
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           padding:
               const EdgeInsets.all(0), // Elimina el padding interno del botón

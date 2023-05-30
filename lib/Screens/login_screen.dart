@@ -1,10 +1,13 @@
 import 'package:chat/Screens/register_screen.dart';
+import 'package:chat/helpers/show_alert.dart';
+import 'package:chat/services/auth_service.dart';
 import 'package:chat/widgets/custom_Input.dart';
 import 'package:chat/widgets/custom_button.dart';
 import 'package:chat/widgets/label.dart';
 import 'package:chat/widgets/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -47,6 +50,7 @@ class __FormState extends State<_Form> {
   final passwordCrtl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Column(
       children: [
         CustomInput(
@@ -63,11 +67,25 @@ class __FormState extends State<_Form> {
           isPassword: true,
         ),
         CustomButton(
-          onPressed: () {
-            print(emailCrtl.text);
-            print(passwordCrtl.text);
-          },
-          text: 'Entrar',
+          onPressed: authService.autenticando
+              ? null
+              : () async {
+                  // print(emailCrtl.text);
+                  // print(passwordCrtl.text);
+
+                  final loginOk = await authService.login(
+                      emailCrtl.text.trim(), passwordCrtl.text.trim());
+                  if (loginOk) {
+                    // ignore: use_build_context_synchronously
+                    Navigator.pushReplacementNamed(context, 'usuarios');
+                  } else {
+                    //Mostrar alerta
+                    // ignore: use_build_context_synchronously
+                    showAlert(
+                        context, 'Upps!', 'Revise sus credenciales nuevamente');
+                  }
+                },
+          text: authService.autenticando ? 'Espere...' : 'Ingresar',
         )
       ],
     );
