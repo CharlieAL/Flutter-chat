@@ -1,5 +1,10 @@
+import 'package:chat/models/mensajes_response.dart';
+import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/chat_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:chat/widgets/chat_message.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -12,32 +17,88 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final textController = TextEditingController();
   final _focusNode = FocusNode();
 
+  late ChatService chatService;
+  late SocketService socketService;
+  late AuthService authService;
+
   final List<ChatMessage> _message = [];
 
   bool _estaEscribiendo = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    chatService = Provider.of<ChatService>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
+    authService = Provider.of<AuthService>(context, listen: false);
+
+    socketService.socket.on('mensaje-personal', _escucharMensaje);
+
+    _cargarHistorial(chatService.usuarioPara.uid);
+    super.initState();
+  }
+
+  void _cargarHistorial(String usuarioId) async {
+    List<Message> chat = await chatService.getChat(usuarioId);
+
+    final history = chat.map((m) => ChatMessage(
+        texto: m.mensaje,
+        uid: m.de,
+        animationController: AnimationController(
+            vsync: this, duration: const Duration(milliseconds: 0))
+          ..forward()));
+    setState(() {
+      _message.insertAll(0, history);
+    });
+  }
+
+  void _escucharMensaje(dynamic payload) {
+    ChatMessage message = ChatMessage(
+      texto: payload['mensaje'],
+      uid: payload['de'],
+      animationController: AnimationController(
+          vsync: this, duration: const Duration(milliseconds: 100)),
+    );
+    setState(() {
+      _message.insert(0, message);
+    });
+    message.animationController.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final usuarioPara = chatService.usuarioPara;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Column(
+          title: Column(
             children: [
               CircleAvatar(
                 backgroundColor: Colors.blueAccent,
                 maxRadius: 16,
                 child: Text(
-                  'Te',
-                  style: TextStyle(fontSize: 12),
+                  usuarioPara.name.substring(0, 2),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 3,
               ),
               Text(
-                'Melissa Flores',
-                style: TextStyle(color: Colors.black87, fontSize: 16),
+                usuarioPara.name,
+                style: const TextStyle(color: Colors.black87, fontSize: 16),
               )
             ],
+          ),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+              color: Colors.black87,
+            ),
           ),
         ),
         body: Column(
@@ -128,19 +189,24 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ));
   _handleSubmit(String value) {
     if (value.isEmpty) return;
-
     _focusNode.requestFocus();
     textController.clear();
     final newMessage = ChatMessage(
       animationController: AnimationController(
           vsync: this, duration: const Duration(milliseconds: 200)),
       texto: value,
-      uid: '123',
+      uid: authService.usuario.uid,
     );
     _message.insert(0, newMessage);
     newMessage.animationController.forward();
     setState(() {
       _estaEscribiendo = false;
+    });
+
+    socketService.socket.emit('mensaje-personal', {
+      'de': authService.usuario.uid,
+      'para': chatService.usuarioPara.uid,
+      'mensaje': value
     });
   }
 

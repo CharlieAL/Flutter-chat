@@ -1,5 +1,8 @@
 import 'package:chat/models/usuario.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/chat_service.dart';
+import 'package:chat/services/socket_service.dart';
+import 'package:chat/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,11 +18,23 @@ class UsuariosScreen extends StatefulWidget {
 class _UsuariosScreenState extends State<UsuariosScreen> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+
+  final usuariosService = UsuariosService();
+
   List<User> usuarios = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _cargarUsuarios();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
+
     final user = authService.usuario;
 
     return Scaffold(
@@ -33,19 +48,19 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
         elevation: 1,
         leading: IconButton(
           onPressed: () {
-            AuthService.deleteToken();
             Navigator.pushReplacementNamed(context, 'login');
+            AuthService.deleteToken();
+            socketService.disconnect();
           },
           icon: const Icon(Icons.close),
           color: Colors.black,
         ),
-        actions: const [
+        actions: [
           IconButton(
             onPressed: null,
-            icon: Icon(
-              Icons.check_circle,
-              color: Color.fromARGB(255, 0, 253, 8),
-            ),
+            icon: socketService.serverStatus == ServerStatus.online
+                ? const Icon(Icons.check_circle, color: Colors.blue)
+                : const Icon(Icons.signal_wifi_bad, color: Colors.red),
           )
         ],
       ),
@@ -87,11 +102,18 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
                 : const Color.fromARGB(255, 255, 0, 0),
             borderRadius: BorderRadius.circular(100)),
       ),
+      onTap: () {
+        final chatService = Provider.of<ChatService>(context, listen: false);
+        chatService.usuarioPara = usuario;
+        Navigator.pushNamed(context, 'chat');
+      },
     );
   }
 
   _cargarUsuarios() async {
-    await Future.delayed(const Duration(milliseconds: 1000));
+    usuarios = await usuariosService.getUsuarios();
+    setState(() {});
+    // await Future.delayed(const Duration(milliseconds: 1000));
     _refreshController.refreshCompleted();
   }
 }

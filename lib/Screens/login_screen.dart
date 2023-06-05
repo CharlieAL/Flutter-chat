@@ -1,6 +1,8 @@
 import 'package:chat/Screens/register_screen.dart';
 import 'package:chat/helpers/show_alert.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
+
 import 'package:chat/widgets/custom_Input.dart';
 import 'package:chat/widgets/custom_button.dart';
 import 'package:chat/widgets/label.dart';
@@ -51,6 +53,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
     return Column(
       children: [
         CustomInput(
@@ -76,6 +79,8 @@ class __FormState extends State<_Form> {
                   final loginOk = await authService.login(
                       emailCrtl.text.trim(), passwordCrtl.text.trim());
                   if (loginOk) {
+                    //Conectar a nuestro socket server
+                    socketService.connect();
                     // ignore: use_build_context_synchronously
                     Navigator.pushReplacementNamed(context, 'usuarios');
                   } else {

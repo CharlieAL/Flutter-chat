@@ -1,6 +1,7 @@
 import 'package:chat/Screens/login_screen.dart';
 import 'package:chat/Screens/usuarios_screen.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -40,15 +41,18 @@ class LoadingScreen extends StatelessWidget {
 
   Future checkLoginState(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final socketService = Provider.of<SocketService>(context);
 
     final autenticado = await authService.isLoggedIn();
     if (autenticado) {
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              pageBuilder: (_, __, ___) => const UsuariosScreen(),
-              transitionDuration: const Duration(milliseconds: 0)));
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const UsuariosScreen(),
+            transitionDuration: const Duration(milliseconds: 0)),
+      );
+      socketService.connect();
     } else {
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(

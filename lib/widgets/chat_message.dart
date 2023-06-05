@@ -1,4 +1,6 @@
+import 'package:chat/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatMessage extends StatelessWidget {
   final String texto;
@@ -14,6 +16,8 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     return SizeTransition(
       sizeFactor:
           CurvedAnimation(parent: animationController, curve: Curves.easeOut),
@@ -23,7 +27,8 @@ class ChatMessage extends StatelessWidget {
         child: FadeTransition(
           opacity: animationController,
           child: Container(
-            child: uid == '123' ? _myMessage() : _notMyMessage(),
+            child:
+                uid == authService.usuario.uid ? _myMessage() : _notMyMessage(),
           ),
         ),
       ),
@@ -35,12 +40,15 @@ class ChatMessage extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.blue[400], borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.only(bottom: 5, left: 100, right: 15),
+            color: const Color.fromARGB(255, 13, 139, 150),
+            borderRadius: BorderRadius.circular(20)),
+        padding:
+            const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 10),
+        margin: const EdgeInsets.only(bottom: 5, left: 50, right: 15),
         child: Text(
           texto,
-          style: const TextStyle(color: Colors.white, fontSize: 17),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
         ),
       ),
     );
@@ -51,12 +59,15 @@ class ChatMessage extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.grey[300], borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.only(bottom: 5, left: 15, right: 100),
+            color: const Color.fromARGB(255, 67, 67, 67),
+            borderRadius: BorderRadius.circular(20)),
+        padding:
+            const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 10),
+        margin: const EdgeInsets.only(bottom: 5, left: 15, right: 50),
         child: Text(
           texto,
-          style: const TextStyle(color: Colors.black87, fontSize: 17),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
         ),
       ),
     );
