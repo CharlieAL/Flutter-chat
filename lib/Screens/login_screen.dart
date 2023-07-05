@@ -81,13 +81,13 @@ class __FormState extends State<_Form> {
                   if (loginOk) {
                     //Conectar a nuestro socket server
                     socketService.connect();
-                    // ignore: use_build_context_synchronously
-                    Navigator.pushReplacementNamed(context, 'usuarios');
+                    if (context.mounted)
+                      Navigator.pushReplacementNamed(context, 'usuarios');
                   } else {
                     //Mostrar alerta
-                    // ignore: use_build_context_synchronously
-                    showAlert(
-                        context, 'Upps!', 'Revise sus credenciales nuevamente');
+                    if (context.mounted)
+                      showAlert(context, 'Upps!',
+                          'Revise sus credenciales nuevamente');
                   }
                 },
           text: authService.autenticando ? 'Espere...' : 'Ingresar',

@@ -27,7 +27,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     chatService = Provider.of<ChatService>(context, listen: false);
     socketService = Provider.of<SocketService>(context, listen: false);
     authService = Provider.of<AuthService>(context, listen: false);
@@ -41,6 +40,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void _cargarHistorial(String usuarioId) async {
     List<Message> chat = await chatService.getChat(usuarioId);
 
+    print(chat[0].createdAt);
+
     final history = chat.map((m) => ChatMessage(
         texto: m.mensaje,
         uid: m.de,
@@ -53,6 +54,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _escucharMensaje(dynamic payload) {
+    print(payload['mensaje']);
     ChatMessage message = ChatMessage(
       texto: payload['mensaje'],
       uid: payload['de'],
@@ -212,8 +214,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    // TODO: off del socket
     for (ChatMessage message in _message) {
       message.animationController.dispose();
     }

@@ -25,7 +25,6 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _cargarUsuarios();
     super.initState();
   }
@@ -34,7 +33,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final socketService = Provider.of<SocketService>(context);
-
+    print(socketService.serverStatus);
     final user = authService.usuario;
 
     return Scaffold(

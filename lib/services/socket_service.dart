@@ -1,6 +1,7 @@
 // import 'package:chat/global/environment.dart';
 import 'package:chat/global/environment.dart';
 import 'package:chat/services/auth_service.dart';
+// import 'package:chat/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 // ignore: library_prefixes
@@ -26,6 +27,8 @@ class SocketService with ChangeNotifier {
 
   void connect() async {
     final token = await AuthService.getToken();
+
+    print(token);
     //dart client
     _socket = IO.io(
         Environment.socketUrl,
@@ -37,6 +40,7 @@ class SocketService with ChangeNotifier {
             .build());
 
     _socket.onConnect((_) {
+      print('object');
       _serverStatus = ServerStatus.online;
       notifyListeners();
     });

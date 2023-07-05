@@ -20,6 +20,8 @@ class ChatService with ChangeNotifier {
 
     final mensajesResponse = mensajesResponseFromJson(resp.body);
 
+    // print(mensajesResponse.messages[0].createdAt);
+
     return mensajesResponse.messages;
   }
 }
